@@ -1,6 +1,7 @@
 /* 
     WATER LEVEL - 31/03/2023
     TODO use something better than just a cmd or powershell terminal, like ncurses
+    TODO look into: WINDOW * win = newwin(8,15,1,1)
 
     g++ main.cpp -o water -lncurses
 */
@@ -9,15 +10,21 @@
 
 #include <ncurses.h>
 #include <iostream>
-#include <unistd.h>
+// #include <unistd.h>
+#include <chrono>
+#include <thread>
 #include <cmath>
 using namespace std;
+
+using namespace std::this_thread;     // sleep_for, sleep_until
+using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
+using std::chrono::system_clock;
 
 
 const int WIDTH = 20;
 const int HEIGHT = 20;
 const int MAX_STEPS = 1000;
-const float WATER_LEVEL_CHANGE = 1;
+const float WATER_LEVEL_CHANGE = 0.1;
 int step = 0;
 
 bool leftIsLower[WIDTH] = {0};
@@ -45,31 +52,34 @@ int main(int argc, char const *argv[])
     initscr();
     cbreak();
     noecho(); 
-    WINDOW * win = newwin(8,15,1,1);
-    wrefresh(win);
+
+    if(has_colors())
+    {
+        start_color();
+        init_pair(1, COLOR_BLUE, COLOR_BLUE);
+        init_pair(2, COLOR_WHITE, COLOR_WHITE);
+    }
 
     float initialWaterVolume = WaterVolume();
-    // while (step++ < MAX_STEPS)
     while (true)
     {
-        // DrawVertical();
         Draw();
         if (step != 1) Physics();
 
         if (!Levelled() || step == 1)
         {
-            if (step == 1) sleep(3);
-            else sleep(1);
+            sleep_for(20ms);
         }
         else
         {
-            // cout << "Water is levelled";
+            erase();
+            cout << "Water is levelled";
             break;
         }
         step++;
     }
 
-    // getch();  // get input, to wait until user presses key to end program
+    getch();
     endwin();
     return 0;
 }
@@ -126,45 +136,32 @@ void Physics()
 
 void Draw()
 {
-    erase();  // cls
-
-    if(has_colors())
-    {
-        start_color();
-        init_pair(1, COLOR_BLUE, COLOR_BLUE);
-        init_pair(2, COLOR_WHITE, COLOR_WHITE);
-    }
-
+    erase();
     printw("WATER LEVEL SIMULATION\nStep: %i", step);
+
     for (int j = 0; j < HEIGHT; j++)
     {
         for (int i = 0; i < WIDTH; i++)
         {
+            char toPrint = ' ';
+            int colorPairIndex = 0;
+            int x = i + 3;
+            int y = HEIGHT - j + 3;
             if (j < groundLevel[i]) 
             {
-                attrset(COLOR_PAIR(2));
-                mvaddch(HEIGHT-j+3, i+3,'G');
-                attroff(COLOR_PAIR(2));
+                toPrint = 'G';
+                colorPairIndex = 2;
             }
             else if (j >= groundLevel[i] && j < waterLevel[i] + groundLevel[i] - 1)
             {
-                attrset(COLOR_PAIR(1));
-                mvaddch(HEIGHT-j+3, i+3,'W');
-                attroff(COLOR_PAIR(1));
+                toPrint = 'W';
+                colorPairIndex = 1;
             }
-            else 
-            {
-                attrset(COLOR_PAIR(3));
-                mvaddch(HEIGHT-j+3, i+3,' ');
-                attroff(COLOR_PAIR(3));
-            }
-            attrset(COLOR_PAIR(3));
-            mvaddch(HEIGHT-j+3, i+3,' ');
-            attroff(COLOR_PAIR(3));
+            attrset(COLOR_PAIR(colorPairIndex));
+            mvaddch(HEIGHT-j+3, i+3, toPrint);
+            attroff(COLOR_PAIR(colorPairIndex));
         }
     }
-
-    
 
     printw("Max water height: %f\tWater volume: %f", MaxWaterHeight(), WaterVolume());
     refresh();
@@ -172,7 +169,7 @@ void Draw()
 
 float MaxWaterHeight()
 {
-    float maxWaterHeight = 0;
+    float maxWaterHeight = 0.0;
     for (int i = 0; i < WIDTH; i++)
     {
         if (waterLevel[i] > maxWaterHeight) maxWaterHeight = waterLevel[i];
@@ -180,7 +177,6 @@ float MaxWaterHeight()
     return maxWaterHeight;
 }
 
-// total amount of water in simulation, for debugging
 float WaterVolume()
 {
     float waterVolume = 0;
