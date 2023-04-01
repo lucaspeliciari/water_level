@@ -1,6 +1,5 @@
 /* 
     WATER LEVEL - 31/03/2023
-    TODO bug: water does not go over high barriers
     TODO use something better than just a cmd or powershell terminal, like ncurses
 */
 
@@ -10,6 +9,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <windows.h> 
+#include <cmath>
 using namespace std;
 
 
@@ -28,11 +28,12 @@ float groundLevel[WIDTH] = {
 }; 
 
 float waterLevel[WIDTH] = {
-    25, 20, 4, 12, 4, 4, 7, 4, 8, 0, 3, 1, 4, 8, 7
+    25, 20, 4, 12, 4, 4, 7, 4, 8, 0, 3, 1, 25, 8, 7, 0, 40
 };
 
 
 void Physics();
+void DrawVertical();
 void Draw();
 float MaxWaterHeight();
 float WaterVolume();
@@ -44,7 +45,8 @@ int main(int argc, char const *argv[])
     float initialWaterVolume = WaterVolume();
     while (step++ < MAX_STEPS)
     {
-        Draw();
+        DrawVertical();
+        // Draw();
         if (step != 1) Physics();
 
         cout << endl << endl << "Max water height: " << MaxWaterHeight() << endl << "Water volume: ";
@@ -57,7 +59,7 @@ int main(int argc, char const *argv[])
         if (!Levelled() || step == 1)
         {
             if (step == 1) sleep(2);
-            else sleep(0.1);
+            else sleep(0.55);
         }
         else
         {
@@ -71,6 +73,7 @@ int main(int argc, char const *argv[])
 }
 
 
+// TODO bug: thinks water is level if there is only a small height difference
 void Physics()
 {
     for (int i = 0; i < WIDTH; i++)
@@ -115,10 +118,50 @@ void Physics()
             waterLevel[i+1] += WATER_LEVEL_CHANGE;
         }
         else continue;
+
+        waterLevel[i] = std::round(waterLevel[i] * 100) / 100;
+        waterLevel[i-1] = std::round(waterLevel[i-1] * 100) / 100;
+        waterLevel[i+1] = std::round(waterLevel[i+1] * 100) / 100;
     }
 }
 
+// does not work
 void Draw()
+{
+    if (system("cls")) system("clear");
+
+    cout << "Step: " << step << endl;
+
+    char toDraw[HEIGHT][WIDTH]; for (int j = 0; j < HEIGHT; j++) for (int i = 0; i < WIDTH; i++) toDraw[j][i] = ' ';
+    
+    for (int j = 0; j < HEIGHT; j++)
+        for (int i = 0; i < WIDTH; i++)
+            if (j < groundLevel[i]) toDraw[j][i] = '#';
+            else if (j > groundLevel[i] && j < waterLevel[i] + 1 + groundLevel[i]) toDraw[j][i] = 'A';
+            else toDraw[j][i] = ' ';
+
+    for (int j = 0; j < HEIGHT; j++)
+    {
+        for (int i = 0; i < WIDTH; i++)
+        {
+            if (toDraw[j][i] == '#')
+            {
+                SetConsoleTextAttribute(hConsole, 7+7*16);
+                cout << "#";
+            }
+            else if (toDraw[j][i] == 'A')
+            {
+                SetConsoleTextAttribute(hConsole, 3+3*16);
+                cout << "A";
+            }
+        }
+        cout << endl;
+        SetConsoleTextAttribute(hConsole, 7);
+    }
+    cout << "||||||||||||||";
+}
+
+void DrawVertical()
 {
     if (system("cls")) system("clear");
 
@@ -126,7 +169,7 @@ void Draw()
     cout << "Step: " << step << endl;
     for (int i = 0; i < WIDTH; i++)
     {
-        cout << i << "  H" << waterLevel[i] << "\t\t\t";
+        cout << i << "\tH" << waterLevel[i] << "\t1";
         for (int j = 0; j < HEIGHT; j++)
         {
             if (j < groundLevel[i])
