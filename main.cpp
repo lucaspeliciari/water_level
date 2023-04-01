@@ -8,12 +8,10 @@
 #include <ncurses.h>
 #include <iostream>
 #include <unistd.h>
-// #include <windows.h> 
 #include <cmath>
 using namespace std;
 
 
-// HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 const int WIDTH = 30;
 const int HEIGHT = 50;
 const int MAX_STEPS = 1000;
@@ -51,8 +49,6 @@ int main(int argc, char const *argv[])
 
         cout << endl << endl << "Max water height: " << MaxWaterHeight() << endl << "Water volume: ";
         float currentWaterVolume = WaterVolume();
-        // if (initialWaterVolume != currentWaterVolume) SetConsoleTextAttribute(hConsole, 12);
-        // else SetConsoleTextAttribute(hConsole, 7);
         cout << currentWaterVolume << endl;
 
 
@@ -84,9 +80,6 @@ void Physics()
 
     for (int i = 0; i < WIDTH; i++)
     {
-        // bool leftIsLower = false;
-        // bool rightIsLower = false;
-
         if (waterLevel[i] <= 0) continue;
 
         leftIsLower[i] = false;
@@ -146,17 +139,14 @@ void Draw()
         {
             if (toDraw[j][i] == '#')
             {
-                // SetConsoleTextAttribute(hConsole, 7+7*16);
                 cout << "#";
             }
             else if (toDraw[j][i] == 'A')
             {
-                // SetConsoleTextAttribute(hConsole, 3+3*16);
                 cout << "A";
             }
         }
         cout << endl;
-        // SetConsoleTextAttribute(hConsole, 7);
     }
     cout << "||||||||||||||";
 }
@@ -165,7 +155,6 @@ void DrawVertical()
 {
     if (system("cls")) system("clear");
 
-    // SetConsoleTextAttribute(hConsole, 7);
     cout << "Step: " << step << endl;
     for (int i = 0; i < WIDTH; i++)
     {
@@ -174,15 +163,12 @@ void DrawVertical()
         {
             if (j < groundLevel[i])
             {
-            //    SetConsoleTextAttribute(hConsole, 7+7*16);
                cout << "#";
             } 
             else if (j > groundLevel[i] && j < waterLevel[i] + 1 + groundLevel[i]) 
             {
-                // SetConsoleTextAttribute(hConsole, 3+3*16);
                 cout << "A";
             }
-            // SetConsoleTextAttribute(hConsole, 7);
         }
         cout << "\t\t\t\t\t\t\tL" << leftIsLower[i] << " R" << rightIsLower[i] << endl;
     }
