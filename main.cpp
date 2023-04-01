@@ -17,14 +17,14 @@ HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 const int WIDTH = 30;
 const int HEIGHT = 50;
 const int MAX_STEPS = 1000;
-const float WATER_LEVEL_CHANGE = 0.2;
+const float WATER_LEVEL_CHANGE = 0.12;
 int step = 0;
 
 bool leftIsLower[WIDTH] = {0};
 bool rightIsLower[WIDTH] = {0};
 
 float groundLevel[WIDTH] = {
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 10, 1, 2, 3, 4, 5, 14
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 8, 1, 2, 3, 4, 5, 14
 }; 
 
 float waterLevel[WIDTH] = {
@@ -36,16 +36,35 @@ void Physics();
 void Draw();
 float MaxWaterHeight();
 float WaterVolume();
+bool Levelled();
 
 
 int main(int argc, char const *argv[])
 {
+    float initialWaterVolume = WaterVolume();
     while (step++ < MAX_STEPS)
     {
         Draw();
-        Physics();
-        cout << endl << endl << "Max water height: " << MaxWaterHeight() << endl << "Water volume: " << WaterVolume();
-        if (step == 1) sleep(2); else sleep(0.1);
+        if (step != 1) Physics();
+
+        cout << endl << endl << "Max water height: " << MaxWaterHeight() << endl << "Water volume: ";
+        float currentWaterVolume = WaterVolume();
+        if (initialWaterVolume != currentWaterVolume) SetConsoleTextAttribute(hConsole, 12);
+        else SetConsoleTextAttribute(hConsole, 7);
+        cout << currentWaterVolume << endl;
+
+
+        if (!Levelled() || step == 1)
+        {
+            if (step == 1) sleep(2);
+            else sleep(0.1);
+        }
+        else
+        {
+            cout << "Water is levelled";
+            break;
+        }
+
     }
 
     return 0;
@@ -103,11 +122,11 @@ void Draw()
 {
     if (system("cls")) system("clear");
 
-    // SetConsoleTextAttribute(hConsole, 7);
+    SetConsoleTextAttribute(hConsole, 7);
     cout << "Step: " << step << endl;
     for (int i = 0; i < WIDTH; i++)
     {
-        cout << i << "\t";
+        cout << i << "  H" << waterLevel[i] << "\t\t\t";
         for (int j = 0; j < HEIGHT; j++)
         {
             if (j < groundLevel[i])
@@ -136,6 +155,7 @@ float MaxWaterHeight()
     return maxWaterHeight;
 }
 
+// total amount of water in simulation, for debugging
 float WaterVolume()
 {
     float waterVolume = 0;
@@ -144,4 +164,14 @@ float WaterVolume()
         waterVolume += waterLevel[i];
     }
     return waterVolume;
+}
+
+// return true if water is perfectly levelled (what should happen after an infinite amount of time)
+bool Levelled()
+{
+    for (int i = 0; i < WIDTH; i++)
+    {
+        if (leftIsLower[i] || rightIsLower[i]) return false;
+    }
+    return true;
 }
