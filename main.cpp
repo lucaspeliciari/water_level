@@ -25,6 +25,9 @@ const int WIDTH = 20;
 const int HEIGHT = 20;
 const int MAX_STEPS = 1000;
 const float WATER_LEVEL_CHANGE = 0.1;
+const int HORIZONTAL_OFFSET = 2;
+const int VERTICAL_OFFSET = 1;
+const int DECIMALS_WATER_HEIGHT = 2;
 int step = 0;
 
 bool leftIsLower[WIDTH] = {0};
@@ -137,16 +140,20 @@ void Physics()
 void Draw()
 {
     erase();
-    printw("WATER LEVEL SIMULATION\nStep: %i", step);
+    move(1, HORIZONTAL_OFFSET);
+    printw("WATER LEVEL SIMULATION");
+    move(2, HORIZONTAL_OFFSET);
+    printw("Step: %i", step);
 
+    // draw water and ground
     for (int j = 0; j < HEIGHT; j++)
     {
         for (int i = 0; i < WIDTH; i++)
         {
             char toPrint = ' ';
             int colorPairIndex = 0;
-            int x = i + 3;
-            int y = HEIGHT - j + 3;
+            int x = i + 2;
+            int y = HEIGHT - j + 2;
             if (j < groundLevel[i]) 
             {
                 toPrint = 'G';
@@ -158,13 +165,38 @@ void Draw()
                 colorPairIndex = 1;
             }
             attrset(COLOR_PAIR(colorPairIndex));
-            mvaddch(HEIGHT-j+3, i+3, toPrint);
+            mvaddch(y, x, toPrint);
             attroff(COLOR_PAIR(colorPairIndex));
         }
     }
 
+    // draw water hight with 2 decimals
+    for (int i = 0; i < WIDTH; i++)
+    {
+        attrset(COLOR_PAIR(0));
+        string heightString = to_string(waterLevel[i]);
+        mvaddch(HEIGHT + 2, i + HORIZONTAL_OFFSET, heightString[0]);
+        mvaddch(HEIGHT + 2 + 1, i + HORIZONTAL_OFFSET, '.');
+        for (int j = 2; j <= DECIMALS_WATER_HEIGHT+2; j++)
+        {
+            mvaddch(HEIGHT + 2 + j, i + HORIZONTAL_OFFSET, heightString[j]);
+        }
+        attroff(COLOR_PAIR(0));
+    }
+
+    move(HEIGHT+4+DECIMALS_WATER_HEIGHT+2, HORIZONTAL_OFFSET);
     printw("Max water height: %f\tWater volume: %f", MaxWaterHeight(), WaterVolume());
     refresh();
+}
+
+float MaxTotalHeight()
+{
+    float maxTotalHeight = 0.0;
+    for (int i = 0; i < WIDTH; i++)
+    {
+        if (waterLevel[i] + groundLevel[i] > maxTotalHeight) maxTotalHeight = waterLevel[i] + groundLevel[i];
+    }
+    return maxTotalHeight;
 }
 
 float MaxWaterHeight()
