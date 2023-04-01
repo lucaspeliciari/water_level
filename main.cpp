@@ -1,6 +1,8 @@
 /* 
     WATER LEVEL - 31/03/2023
     TODO use something better than just a cmd or powershell terminal, like ncurses
+
+    g++ main.cpp -o water -lncurses
 */
 
 
@@ -12,21 +14,21 @@
 using namespace std;
 
 
-const int WIDTH = 30;
-const int HEIGHT = 50;
+const int WIDTH = 20;
+const int HEIGHT = 20;
 const int MAX_STEPS = 1000;
-const float WATER_LEVEL_CHANGE = 0.12;
+const float WATER_LEVEL_CHANGE = 1;
 int step = 0;
 
 bool leftIsLower[WIDTH] = {0};
 bool rightIsLower[WIDTH] = {0};
 
 float groundLevel[WIDTH] = {
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 8, 1, 2, 3, 4, 5, 14
+    10,9,8,7,6,5,4,3,2,1,0,0,0,0,0
 }; 
 
 float waterLevel[WIDTH] = {
-    25, 20, 4, 12, 4, 4, 7, 4, 8, 0, 3, 1, 25, 8, 7, 0, 40
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0
 };
 
 
@@ -40,31 +42,35 @@ bool Levelled();
 
 int main(int argc, char const *argv[])
 {
+    initscr();
+    cbreak();
+    noecho(); 
+    WINDOW * win = newwin(8,15,1,1);
+    wrefresh(win);
+
     float initialWaterVolume = WaterVolume();
-    while (step++ < MAX_STEPS)
+    // while (step++ < MAX_STEPS)
+    while (true)
     {
-        DrawVertical();
-        // Draw();
+        // DrawVertical();
+        Draw();
         if (step != 1) Physics();
-
-        cout << endl << endl << "Max water height: " << MaxWaterHeight() << endl << "Water volume: ";
-        float currentWaterVolume = WaterVolume();
-        cout << currentWaterVolume << endl;
-
 
         if (!Levelled() || step == 1)
         {
-            if (step == 1) sleep(2);
-            else sleep(0.55);
+            if (step == 1) sleep(3);
+            else sleep(1);
         }
         else
         {
-            cout << "Water is levelled";
+            // cout << "Water is levelled";
             break;
         }
-
+        step++;
     }
 
+    // getch();  // get input, to wait until user presses key to end program
+    endwin();
     return 0;
 }
 
@@ -118,60 +124,50 @@ void Physics()
     }
 }
 
-// does not work
 void Draw()
 {
-    if (system("cls")) system("clear");
+    erase();  // cls
 
-    cout << "Step: " << step << endl;
+    if(has_colors())
+    {
+        start_color();
+        init_pair(1, COLOR_BLUE, COLOR_BLUE);
+        init_pair(2, COLOR_WHITE, COLOR_WHITE);
+    }
 
-    char toDraw[HEIGHT][WIDTH]; for (int j = 0; j < HEIGHT; j++) for (int i = 0; i < WIDTH; i++) toDraw[j][i] = ' ';
+    printw("WATER LEVEL SIMULATION\nStep: %i", step);
+    for (int j = 0; j < HEIGHT; j++)
+    {
+        for (int i = 0; i < WIDTH; i++)
+        {
+            if (j < groundLevel[i]) 
+            {
+                attrset(COLOR_PAIR(2));
+                mvaddch(HEIGHT-j+3, i+3,'G');
+                attroff(COLOR_PAIR(2));
+            }
+            else if (j >= groundLevel[i] && j < waterLevel[i] + groundLevel[i] - 1)
+            {
+                attrset(COLOR_PAIR(1));
+                mvaddch(HEIGHT-j+3, i+3,'W');
+                attroff(COLOR_PAIR(1));
+            }
+            else 
+            {
+                attrset(COLOR_PAIR(3));
+                mvaddch(HEIGHT-j+3, i+3,' ');
+                attroff(COLOR_PAIR(3));
+            }
+            attrset(COLOR_PAIR(3));
+            mvaddch(HEIGHT-j+3, i+3,' ');
+            attroff(COLOR_PAIR(3));
+        }
+    }
+
     
-    for (int j = 0; j < HEIGHT; j++)
-        for (int i = 0; i < WIDTH; i++)
-            if (j < groundLevel[i]) toDraw[j][i] = '#';
-            else if (j > groundLevel[i] && j < waterLevel[i] + 1 + groundLevel[i]) toDraw[j][i] = 'A';
-            else toDraw[j][i] = ' ';
 
-    for (int j = 0; j < HEIGHT; j++)
-    {
-        for (int i = 0; i < WIDTH; i++)
-        {
-            if (toDraw[j][i] == '#')
-            {
-                cout << "#";
-            }
-            else if (toDraw[j][i] == 'A')
-            {
-                cout << "A";
-            }
-        }
-        cout << endl;
-    }
-    cout << "||||||||||||||";
-}
-
-void DrawVertical()
-{
-    if (system("cls")) system("clear");
-
-    cout << "Step: " << step << endl;
-    for (int i = 0; i < WIDTH; i++)
-    {
-        cout << i << "\tH" << waterLevel[i] << "\t1";
-        for (int j = 0; j < HEIGHT; j++)
-        {
-            if (j < groundLevel[i])
-            {
-               cout << "#";
-            } 
-            else if (j > groundLevel[i] && j < waterLevel[i] + 1 + groundLevel[i]) 
-            {
-                cout << "A";
-            }
-        }
-        cout << "\t\t\t\t\t\t\tL" << leftIsLower[i] << " R" << rightIsLower[i] << endl;
-    }
+    printw("Max water height: %f\tWater volume: %f", MaxWaterHeight(), WaterVolume());
+    refresh();
 }
 
 float MaxWaterHeight()
