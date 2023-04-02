@@ -4,6 +4,8 @@
     TODO look into: WINDOW * win = newwin(8,15,1,1)
 
     g++ main.cpp -o water -lncurses
+    To compile and run with a single code:
+        alias runcode='g++ main.cpp -o water -lncurses;./water'
 */
 
 
@@ -21,7 +23,7 @@ using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
 using std::chrono::system_clock;
 
 
-const int WIDTH = 20;
+const int WIDTH = 50;
 const int HEIGHT = 20;
 const int MAX_STEPS = 1000;
 const float WATER_LEVEL_CHANGE = 0.1;
@@ -38,12 +40,11 @@ float groundLevel[WIDTH] = {
 }; 
 
 float waterLevel[WIDTH] = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 0, 0, 0, 0
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 15
 };
 
 
 void Physics();
-void DrawVertical();
 void Draw();
 float MaxWaterHeight();
 float WaterVolume();
@@ -56,23 +57,24 @@ int main(int argc, char const *argv[])
     cbreak();
     noecho(); 
 
+    // set up colors if terminal supports them
     if(has_colors())
     {
         start_color();
         init_pair(1, COLOR_BLUE, COLOR_BLUE);
         init_pair(2, COLOR_WHITE, COLOR_WHITE);
+        init_pair(3, COLOR_BLUE, COLOR_WHITE);
+        init_pair(4, COLOR_WHITE, COLOR_BLUE);
     }
 
     float initialWaterVolume = WaterVolume();
     while (true)
     {
         Draw();
-        if (step != 1) Physics();
+        Physics();
 
-        if (!Levelled() || step == 1)
-        {
+        if (!Levelled() || step == 0)
             sleep_for(20ms);
-        }
         else
         {
             erase();
@@ -89,6 +91,7 @@ int main(int argc, char const *argv[])
 
 
 // TODO bug: thinks water is level if there is only a small height difference
+// TODO bug: water gets "stuck" sometimes
 void Physics()
 {
     for (int i = 0; i < WIDTH; i++)
@@ -150,38 +153,26 @@ void Draw()
     {
         for (int i = 0; i < WIDTH; i++)
         {
-            char toPrint = ' ';
+            char charToPrint = ' ';
             int colorPairIndex = 0;
             int x = i + 2;
             int y = HEIGHT - j + 2;
-            if (j < groundLevel[i]) 
+
+            if (j < groundLevel[i])  colorPairIndex = 2;
+            else if (j >= groundLevel[i] && j < waterLevel[i] + groundLevel[i] - 1) colorPairIndex = 1;
+
+            // if (j < DECIMALS_WATER_HEIGHT + 2)
+            if (j == 0)
             {
-                toPrint = 'G';
-                colorPairIndex = 2;
+                charToPrint = to_string(waterLevel[i])[j];
+                if (colorPairIndex == 2) colorPairIndex = 3;
+                else if (colorPairIndex == 1) colorPairIndex = 4;
             }
-            else if (j >= groundLevel[i] && j < waterLevel[i] + groundLevel[i] - 1)
-            {
-                toPrint = 'W';
-                colorPairIndex = 1;
-            }
+
             attrset(COLOR_PAIR(colorPairIndex));
-            mvaddch(y, x, toPrint);
+            mvaddch(y, x, charToPrint);
             attroff(COLOR_PAIR(colorPairIndex));
         }
-    }
-
-    // draw water hight with 2 decimals
-    for (int i = 0; i < WIDTH; i++)
-    {
-        attrset(COLOR_PAIR(0));
-        string heightString = to_string(waterLevel[i]);
-        mvaddch(HEIGHT + 2, i + HORIZONTAL_OFFSET, heightString[0]);
-        mvaddch(HEIGHT + 2 + 1, i + HORIZONTAL_OFFSET, '.');
-        for (int j = 2; j <= DECIMALS_WATER_HEIGHT+2; j++)
-        {
-            mvaddch(HEIGHT + 2 + j, i + HORIZONTAL_OFFSET, heightString[j]);
-        }
-        attroff(COLOR_PAIR(0));
     }
 
     move(HEIGHT+4+DECIMALS_WATER_HEIGHT+2, HORIZONTAL_OFFSET);
