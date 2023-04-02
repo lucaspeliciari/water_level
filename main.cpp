@@ -36,7 +36,7 @@ bool leftIsLower[WIDTH] = {0};
 bool rightIsLower[WIDTH] = {0};
 
 float groundLevel[WIDTH] = {
-    10,9,8,7,6,5,4,3,2,1,0,0,0,0,0
+    10,9,8,7,6,5,4,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2
 }; 
 
 float waterLevel[WIDTH] = {
@@ -74,7 +74,7 @@ int main(int argc, char const *argv[])
         Physics();
 
         if (!Levelled() || step == 0)
-            sleep_for(20ms);
+            sleep_for(10ms);
         else
         {
             erase();
