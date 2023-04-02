@@ -141,10 +141,6 @@ void Physics()
             waterLevel[i+1] += WATER_LEVEL_CHANGE;
         }
         else continue;
-
-        // waterLevel[i] = std::round(waterLevel[i] * 100) / 100;
-        // waterLevel[i-1] = std::round(waterLevel[i-1] * 100) / 100;
-        // waterLevel[i+1] = std::round(waterLevel[i+1] * 100) / 100;
     }
 }
 
