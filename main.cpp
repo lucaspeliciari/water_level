@@ -12,13 +12,12 @@
 
 #include <ncurses.h>
 #include <iostream>
-// #include <unistd.h>
 #include <chrono>
 #include <thread>
 #include <cmath>
 using namespace std;
 
-using namespace std::this_thread;     // sleep_for, sleep_until
+using namespace std::this_thread;     // sleep_for
 using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
 using std::chrono::system_clock;
 
@@ -26,28 +25,28 @@ using std::chrono::system_clock;
 const int WIDTH = 50;
 const int HEIGHT = 20;
 const int MAX_STEPS = 1000;
-const float WATER_LEVEL_CHANGE = 0.1;
+const float WATER_LEVEL_CHANGE = 2;
 const int HORIZONTAL_OFFSET = 2;
 const int VERTICAL_OFFSET = 1;
 const int DECIMALS_WATER_HEIGHT = 2;
 int step = 0;
 
-bool leftIsLower[WIDTH] = {0};
-bool rightIsLower[WIDTH] = {0};
+bool leftIsLower[WIDTH] = {false};
+bool rightIsLower[WIDTH] = {false};
 
-float groundLevel[WIDTH] = {
+int groundLevel[WIDTH] = {
     10,9,8,7,6,5,4,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2
 }; 
 
-float waterLevel[WIDTH] = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 15
+int waterLevel[WIDTH] = {
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 0, 0, 2, 0, 0, 0, 0, 15
 };
 
 
 void Physics();
 void Draw();
-float MaxWaterHeight();
-float WaterVolume();
+int MaxWaterHeight();
+int WaterVolume();
 bool Levelled();
 
 
@@ -55,7 +54,14 @@ int main(int argc, char const *argv[])
 {
     initscr();
     cbreak();
-    noecho(); 
+    noecho();
+
+    for (int i = 0; i < WIDTH; i++)
+    {
+        waterLevel[i] = waterLevel[i] * 1000;
+        groundLevel[i] = groundLevel[i] * 1000;
+    }
+    
 
     // set up colors if terminal supports them
     if(has_colors())
@@ -67,18 +73,19 @@ int main(int argc, char const *argv[])
         init_pair(4, COLOR_WHITE, COLOR_BLUE);
     }
 
-    float initialWaterVolume = WaterVolume();
+    int initialWaterVolume = WaterVolume();
     while (true)
     {
         Draw();
         Physics();
 
         if (!Levelled() || step == 0)
-            sleep_for(10ms);
+            sleep_for(1ms);
         else
         {
-            erase();
-            cout << "Water is levelled";
+            move(HEIGHT+4+DECIMALS_WATER_HEIGHT+3, HORIZONTAL_OFFSET);
+            printw("### Water is levelled ###");
+            getch();
             break;
         }
         step++;
@@ -92,6 +99,7 @@ int main(int argc, char const *argv[])
 
 // TODO bug: thinks water is level if there is only a small height difference
 // TODO bug: water gets "stuck" sometimes
+// TODO bug: acts like there are invisible barriers sometimes
 void Physics()
 {
     for (int i = 0; i < WIDTH; i++)
@@ -102,7 +110,7 @@ void Physics()
 
     for (int i = 0; i < WIDTH; i++)
     {
-        if (waterLevel[i] <= 0) continue;
+        if (waterLevel[i] < WATER_LEVEL_CHANGE) continue;
 
         leftIsLower[i] = false;
         rightIsLower[i] = false;
@@ -134,9 +142,9 @@ void Physics()
         }
         else continue;
 
-        waterLevel[i] = std::round(waterLevel[i] * 100) / 100;
-        waterLevel[i-1] = std::round(waterLevel[i-1] * 100) / 100;
-        waterLevel[i+1] = std::round(waterLevel[i+1] * 100) / 100;
+        // waterLevel[i] = std::round(waterLevel[i] * 100) / 100;
+        // waterLevel[i-1] = std::round(waterLevel[i-1] * 100) / 100;
+        // waterLevel[i+1] = std::round(waterLevel[i+1] * 100) / 100;
     }
 }
 
@@ -158,13 +166,20 @@ void Draw()
             int x = i + 2;
             int y = HEIGHT - j + 2;
 
-            if (j < groundLevel[i])  colorPairIndex = 2;
-            else if (j >= groundLevel[i] && j < waterLevel[i] + groundLevel[i] - 1) colorPairIndex = 1;
+            if (j*1000 < groundLevel[i])  colorPairIndex = 2;
+            else if (j*1000 >= groundLevel[i] && j*1000 < waterLevel[i] + groundLevel[i] - 1) colorPairIndex = 1;
 
-            // if (j < DECIMALS_WATER_HEIGHT + 2)
+            /*if (j < DECIMALS_WATER_HEIGHT+2)
+            {
+                charToPrint = to_string(int(waterLevel[i]))[j];
+                if (colorPairIndex == 2) colorPairIndex = 3;
+                else if (colorPairIndex == 1) colorPairIndex = 4;
+            }*/
             if (j == 0)
             {
-                charToPrint = to_string(waterLevel[i])[j];
+                if (leftIsLower[i] && rightIsLower[i]) charToPrint = '|';
+                else if (leftIsLower[i]) charToPrint = '<';
+                else if (rightIsLower[i]) charToPrint = '>';
                 if (colorPairIndex == 2) colorPairIndex = 3;
                 else if (colorPairIndex == 1) colorPairIndex = 4;
             }
@@ -176,13 +191,15 @@ void Draw()
     }
 
     move(HEIGHT+4+DECIMALS_WATER_HEIGHT+2, HORIZONTAL_OFFSET);
-    printw("Max water height: %f\tWater volume: %f", MaxWaterHeight(), WaterVolume());
+    printw("Max water height: %i\tWater volume: %i", MaxWaterHeight(), WaterVolume());
+    move(HEIGHT+5+DECIMALS_WATER_HEIGHT+2, HORIZONTAL_OFFSET);
+    printw("%i + %i = %i", groundLevel[15], waterLevel[15], groundLevel[15] + waterLevel[15]);
     refresh();
 }
 
-float MaxTotalHeight()
+int MaxTotalHeight()
 {
-    float maxTotalHeight = 0.0;
+    int maxTotalHeight = 0;
     for (int i = 0; i < WIDTH; i++)
     {
         if (waterLevel[i] + groundLevel[i] > maxTotalHeight) maxTotalHeight = waterLevel[i] + groundLevel[i];
@@ -190,9 +207,9 @@ float MaxTotalHeight()
     return maxTotalHeight;
 }
 
-float MaxWaterHeight()
+int MaxWaterHeight()
 {
-    float maxWaterHeight = 0.0;
+    int maxWaterHeight = 0;
     for (int i = 0; i < WIDTH; i++)
     {
         if (waterLevel[i] > maxWaterHeight) maxWaterHeight = waterLevel[i];
@@ -200,9 +217,9 @@ float MaxWaterHeight()
     return maxWaterHeight;
 }
 
-float WaterVolume()
+int WaterVolume()
 {
-    float waterVolume = 0;
+    int waterVolume = 0;
     for (int i = 0; i < WIDTH; i++)
     {
         waterVolume += waterLevel[i];
