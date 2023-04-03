@@ -2,6 +2,7 @@
     WATER LEVEL - 31/03/2023
     TODO use something better than just a cmd or powershell terminal, like ncurses
     TODO look into: WINDOW * win = newwin(8,15,1,1)
+    TODO faster flow when greater height difference
 
     g++ main.cpp -o water -lncurses
     To compile and run with a single code:
@@ -39,7 +40,7 @@ int groundLevel[WIDTH] = {
 }; 
 
 int waterLevel[WIDTH] = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 0, 0, 2, 0, 0, 0, 0, 15
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 0, 0, 2, 0, 3, 0, 0, 15, 4, 4, 3, 7, 1, 1, 1, 1, 1, 19
 };
 
 
@@ -165,12 +166,14 @@ void Draw()
             if (j*1000 < groundLevel[i])  colorPairIndex = 2;
             else if (j*1000 >= groundLevel[i] && j*1000 < waterLevel[i] + groundLevel[i] - 1) colorPairIndex = 1;
 
+            // This works but it's very ugly
             /*if (j < DECIMALS_WATER_HEIGHT+2)
             {
                 charToPrint = to_string(int(waterLevel[i]))[j];
                 if (colorPairIndex == 2) colorPairIndex = 3;
                 else if (colorPairIndex == 1) colorPairIndex = 4;
             }*/
+            
             if (j == 0)
             {
                 if (leftIsLower[i] && rightIsLower[i]) charToPrint = '|';
