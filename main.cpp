@@ -9,7 +9,6 @@
 */
 
 
-
 #include <ncurses.h>
 #include <iostream>
 #include <chrono>

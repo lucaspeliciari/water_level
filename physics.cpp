@@ -52,6 +52,5 @@ void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bo
         {
             waterLevel[i] -= water_flow;
         }
-
     }
 }
