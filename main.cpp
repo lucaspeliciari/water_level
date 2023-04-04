@@ -48,10 +48,6 @@ int waterLevel[WIDTH] = {
 };
 
 
-// void Physics();
-// void Draw();
-
-
 int main(int argc, char const *argv[])
 {
     initscr();
@@ -63,7 +59,6 @@ int main(int argc, char const *argv[])
         waterLevel[i] = waterLevel[i] * 1000;
         groundLevel[i] = groundLevel[i] * 1000;
     }
-    
 
     // set up colors if terminal supports them
     if(has_colors())
@@ -97,55 +92,3 @@ int main(int argc, char const *argv[])
     endwin();
     return 0;
 }
-/*
-void Draw()
-{
-    erase();
-    move(1, HORIZONTAL_OFFSET);
-    printw("WATER LEVEL SIMULATION");
-    move(2, HORIZONTAL_OFFSET);
-    printw("Step: %i", step);
-
-    // draw water and ground
-    for (int j = 0; j < HEIGHT; j++)
-    {
-        for (int i = 0; i < WIDTH; i++)
-        {
-            char charToPrint = ' ';
-            int colorPairIndex = 0;
-            int x = i + 2;
-            int y = HEIGHT - j + 2;
-
-            if (j*1000 < groundLevel[i])  colorPairIndex = 2;
-            else if (j*1000 >= groundLevel[i] && j*1000 < waterLevel[i] + groundLevel[i] - 1) colorPairIndex = 1;
-
-            // This works but it's very ugly
-            // if (j < DECIMALS_WATER_HEIGHT+2)
-            // {
-            //     charToPrint = to_string(int(waterLevel[i]))[j];
-            //     if (colorPairIndex == 2) colorPairIndex = 3;
-            //     else if (colorPairIndex == 1) colorPairIndex = 4;
-            // }
-
-            if (j == 0)
-            {
-                if (leftIsLower[i] && rightIsLower[i]) charToPrint = '|';
-                else if (leftIsLower[i]) charToPrint = '<';
-                else if (rightIsLower[i]) charToPrint = '>';
-                if (colorPairIndex == 2) colorPairIndex = 3;
-                else if (colorPairIndex == 1) colorPairIndex = 4;
-            }
-
-            attrset(COLOR_PAIR(colorPairIndex));
-            mvaddch(y, x, charToPrint);
-            attroff(COLOR_PAIR(colorPairIndex));
-        }
-    }
-
-    move(HEIGHT+4+DECIMALS_WATER_HEIGHT+2, HORIZONTAL_OFFSET);
-    printw("Max water height: %i\tWater volume: %i", MaxWaterHeight(WIDTH, waterLevel, groundLevel), WaterVolume(WIDTH, waterLevel, groundLevel));
-    move(HEIGHT+5+DECIMALS_WATER_HEIGHT+2, HORIZONTAL_OFFSET);
-    printw("%i + %i = %i", groundLevel[15], waterLevel[15], groundLevel[15] + waterLevel[15]);
-    refresh();
-}
-*/
