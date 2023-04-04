@@ -77,13 +77,13 @@ int main(int argc, char const *argv[])
 
         if (!Levelled(WIDTH, leftIsLower, rightIsLower) || step == 0)
             sleep_for(1ms);
-        // else
-        // {
-        //     move(HEIGHT+4+DECIMALS_WATER_HEIGHT+3, HORIZONTAL_OFFSET);
-        //     printw("### Water is levelled ###");
-        //     getch();
-        //     break;
-        // }
+        else if (step > 0)
+        {
+            move(HEIGHT+4+DECIMALS_WATER_HEIGHT+3, HORIZONTAL_OFFSET);
+            printw("### Water is levelled ###");
+            getch();
+            break;
+        }
         step++;
     }
 

@@ -1,4 +1,5 @@
 #include <ncurses.h>
+#include <string>
 #include "checks.h"
 
 using namespace std;
@@ -18,8 +19,8 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
         {
             char charToPrint = ' ';
             int colorPairIndex = 0;
-            int x = i + 2;
-            int y = height - j + 2;
+            int x = i + 1+horizontal_offset;
+            int y = height - j + 1+horizontal_offset;
 
             if (j*1000 < groundLevel[i])  colorPairIndex = 2;
             else if (j*1000 >= groundLevel[i] && j*1000 < waterLevel[i] + groundLevel[i] - 1) colorPairIndex = 1;
@@ -36,7 +37,29 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
             attrset(COLOR_PAIR(colorPairIndex));
             mvaddch(y, x, charToPrint);
             attroff(COLOR_PAIR(colorPairIndex));
+
+            attrset(COLOR_PAIR(0));
+            if (i < 10)
+                mvaddch(height+3 , i+1+horizontal_offset, '0'+i);
+            else
+            {
+                string str = to_string(i);
+                mvaddch(height+3 , i+1+horizontal_offset, str[0]);
+                mvaddch(height+4 , i+1+horizontal_offset, str[1]);
+            }
+            attroff(COLOR_PAIR(0));
         }
+
+        attrset(COLOR_PAIR(0));
+        if (j < 10)
+            mvaddch(height+2-j , width+3, '0'+j);
+        else
+        {
+            string str = to_string(j);
+            mvaddch(height+2-j , width+1+horizontal_offset, str[0]);
+            mvaddch(height+2-j , width+2+horizontal_offset, str[1]);
+        }
+        attroff(COLOR_PAIR(0));
     }
 
     move(height+4+decimals_water_height+2, horizontal_offset);
