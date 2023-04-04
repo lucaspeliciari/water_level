@@ -1,7 +1,5 @@
 /* 
     WATER LEVEL - 31/03/2023
-    TODO use something better than just a cmd or powershell terminal, like ncurses
-    TODO look into: WINDOW * win = newwin(8,15,1,1)
     TODO faster flow when greater height difference
 
     g++ main.cpp checks.cpp physics.cpp draw.cpp -o water -lncurses
@@ -40,11 +38,11 @@ bool leftIsLower[WIDTH] = {false};
 bool rightIsLower[WIDTH] = {false};
 
 int groundLevel[WIDTH] = {
-    10,9,8,7,6,5,4,3,2,1,0,5,0,0,1,0,0,0,0,0,3,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,14,0,0,1,0,2,0,3,17
+    10,9,8,7,6,5,4,3,2,1,0,5,0,0,1,0,0,0,0,0,12,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,14,0,0,1,0,2,0,3,17,0,0,0,0,10
 }; 
 
 int waterLevel[WIDTH] = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 0, 0, 2, 0, 3, 0, 0, 15, 4, 4, 3, 7, 1, 1, 1, 1, 1, 19
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 0, 0, 2, 0, 3, 0, 0, 15, 4, 4, 3, 7, 1, 1, 1, 1, 1, 19,0,0,0,0,10
 };
 
 

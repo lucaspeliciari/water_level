@@ -1,9 +1,6 @@
 #include "physics.h"
 
 
-// TODO bug: thinks water is level if there is only a small height difference
-// TODO bug: water gets "stuck" sometimes
-// TODO bug: acts like there are invisible barriers sometimes
 void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bool *rightIsLower, int water_flow)  // use & instead of *?
 {
     for (int i = 0; i < width; i++)
