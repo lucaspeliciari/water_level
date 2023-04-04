@@ -40,12 +40,12 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
 
             attrset(COLOR_PAIR(0));
             if (i < 10)
-                mvaddch(height+3 , i+1+horizontal_offset, '0'+i);
+                mvaddch(height+4 , i+1+horizontal_offset, '0'+i);
             else
             {
                 string str = to_string(i);
-                mvaddch(height+3 , i+1+horizontal_offset, str[0]);
-                mvaddch(height+4 , i+1+horizontal_offset, str[1]);
+                mvaddch(height+4 , i+1+horizontal_offset, str[0]);
+                mvaddch(height+5 , i+1+horizontal_offset, str[1]);
             }
             attroff(COLOR_PAIR(0));
         }
