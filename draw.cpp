@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include "checks.h"
+// #include "particle.cpp"
 
 using namespace std;
 
@@ -42,4 +43,23 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
     move(height+4+decimals_water_height+2, horizontal_offset);
     printw("Max water height: %i\tWater volume: %i", MaxWaterHeight(width, waterLevel, groundLevel), WaterVolume(width, waterLevel, groundLevel));
     refresh();
+}
+
+void DrawParticles(Particle *particles, int step)
+{
+    erase();
+    move(1, 2);
+    printw("WATER LEVEL SIMULATION");
+    move(2, 2);
+    printw("Step: %i", step);
+
+    for (int i = 0; i < 100; i++)  // should be number of particles instead of 100
+    {
+        if (particles[i] == NULL)
+            continue;
+        
+        attrset(COLOR_PAIR(1));
+        mvaddch(particles[i].y, particles[i].x, ' ');
+        attroff(COLOR_PAIR(1));
+    }
 }

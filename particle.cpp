@@ -10,4 +10,9 @@ class Particle
         x = nx;
         y = ny;
     }
+
+    void Update(int g)
+    {
+        y += g;
+    }
 };

@@ -2,9 +2,9 @@
     WATER LEVEL - 31/03/2023
     TODO faster flow when greater height difference
 
-    g++ main.cpp checks.cpp physics.cpp draw.cpp -o water -lncurses
+    g++ main.cpp checks.cpp physics.cpp draw.cpp particle.cpp -o water -lncurses
     To compile and run with a single code:
-        alias runcode='g++ main.cpp checks.cpp physics.cpp draw.cpp -o water -lncurses;./water'
+        alias runcode='g++ main.cpp checks.cpp physics.cpp draw.cpp particle.cpp -o water -lncurses;./water'
 */
 
 
@@ -17,6 +17,7 @@
 #include "checks.h"
 #include "physics.h"
 #include "draw.h"
+#include "particle.cpp"
 
 
 using namespace std;
@@ -34,6 +35,9 @@ const int VERTICAL_OFFSET = 1;
 const int DECIMALS_WATER_HEIGHT = 2;
 int step = 0;
 
+const int MAX_PARTICLES = 100;
+const int GRAVITY = 1;  // 1 tile per tick?
+
 bool leftIsLower[WIDTH] = {false};
 bool rightIsLower[WIDTH] = {false};
 
@@ -45,9 +49,17 @@ int waterLevel[WIDTH] = {
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 0, 0, 2, 0, 3, 0, 0, 15, 4, 4, 3, 7, 1, 1, 1, 1, 1, 19,0,0,0,0,10
 };
 
+Particle particles[MAX_PARTICLES];
+
 
 int main(int argc, char const *argv[])
 {
+    int numberOfParticles = rand() % 100 + 1;  // from 1 to 100
+    for (int i = 0; i < numberOfParticles; i++)
+    {
+        particles[i] = Particle(i+1, HEIGHT - 1);
+    }
+
     initscr();
     cbreak();
     noecho();
@@ -71,7 +83,8 @@ int main(int argc, char const *argv[])
     int initialWaterVolume = WaterVolume(WIDTH, waterLevel, groundLevel);
     while (true)
     {
-        Draw( WIDTH,  HEIGHT,  HORIZONTAL_OFFSET,  step,  DECIMALS_WATER_HEIGHT,  waterLevel, groundLevel, leftIsLower, rightIsLower);
+        // Draw( WIDTH,  HEIGHT,  HORIZONTAL_OFFSET,  step,  DECIMALS_WATER_HEIGHT,  waterLevel, groundLevel, leftIsLower, rightIsLower);
+        DrawParticles(particles, step);
         Physics(WIDTH, waterLevel, groundLevel, leftIsLower, rightIsLower, WATER_FLOW);
 
         if (!Levelled(WIDTH, leftIsLower, rightIsLower) || step == 0)
