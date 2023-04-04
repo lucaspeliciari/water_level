@@ -1,7 +1,7 @@
 #include "physics.h"
 
 
-void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bool *rightIsLower, int water_flow)  // use & instead of *?
+void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bool *rightIsLower, int water_flow)
 {
     for (int i = 0; i < width; i++)
     {   
@@ -9,6 +9,7 @@ void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bo
         rightIsLower[i] = false;
     }
 
+    // apply gravity
     for (int i = 0; i < width; i++)
     {
         if (waterLevel[i] < water_flow) continue;
@@ -42,5 +43,15 @@ void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bo
             waterLevel[i+1] += water_flow;
         }
         else continue;
+    }
+
+    // drain water
+    for (int i = 0; i < width; i++)
+    {
+        if (groundLevel[i] == 0 && waterLevel[i] > 0)
+        {
+            waterLevel[i] -= water_flow;
+        }
+
     }
 }

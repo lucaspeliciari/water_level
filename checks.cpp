@@ -32,6 +32,7 @@ int WaterVolume(int width, int *waterLevel, int *groundLevel)
 }
 
 // return true if water is perfectly levelled (what should happen after an infinite amount of time)
+// but it never gets perfectly levelled so this is always false
 bool Levelled(int width, bool *leftIsLower, bool *rightIsLower)
 {
     for (int i = 0; i < width; i++)
