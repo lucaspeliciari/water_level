@@ -1,1 +1,1 @@
-Very simple water level simulation in C++
+Very simple water level simulation in C++ using ncurses

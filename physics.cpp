@@ -3,28 +3,23 @@
 
 void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bool *rightIsLower, int water_flow)
 {
-    for (int i = 0; i < width; i++)
-    {   
-        leftIsLower[i] = false;
-        rightIsLower[i] = false;
-    }
-
     // apply gravity
     for (int i = 0; i < width; i++)
     {
-        if (waterLevel[i] < water_flow) continue;
+        // if (waterLevel[i] < water_flow) continue;
 
+        // reset values
         leftIsLower[i] = false;
         rightIsLower[i] = false;
 
         int currentHeight = groundLevel[i] + waterLevel[i];
-        int leftHeight = -1;
-        int rightHeight = -1;
+        int leftHeight = 0;
+        int rightHeight = 0;
         if (i > 0) leftHeight = groundLevel[i-1] + waterLevel[i-1];
-        if (i < width) rightHeight = groundLevel[i+1] + waterLevel[i+1];
+        if (i < width - 1) rightHeight = groundLevel[i+1] + waterLevel[i+1];
 
-        if (leftHeight > -1 && currentHeight > leftHeight) leftIsLower[i] = true;
-        if (rightHeight > -1 && currentHeight > rightHeight) rightIsLower[i] = true;
+        if (leftHeight > 0 && currentHeight > leftHeight) leftIsLower[i] = true;
+        if (rightHeight > 0 && currentHeight > rightHeight) rightIsLower[i] = true;
 
         if (leftIsLower[i] && rightIsLower[i])
         {
@@ -43,14 +38,12 @@ void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bo
             waterLevel[i+1] += water_flow;
         }
         else continue;
+
+        if (waterLevel[i] < 0) waterLevel[i] = 0;
     }
 
-    // drain water
+    // drain water from the bottom
     for (int i = 0; i < width; i++)
-    {
-        if (groundLevel[i] == 0 && waterLevel[i] > 0)
-        {
+        if (waterLevel[i] >= water_flow && groundLevel[i] == 0 && waterLevel[i] > 0)
             waterLevel[i] -= water_flow;
-        }
-    }
 }
