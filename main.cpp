@@ -3,6 +3,7 @@
     TODO faster flow when greater height difference
     TODO bug where left and/or right is lower is true even though levels are all 0
     TODO bug where there's 1 drop of water balanced on top of a wall
+    TODO fixed "jagged" water when it tries to stay levelled
 
     g++ main.cpp checks.cpp physics.cpp draw.cpp -o water -lncurses
     To compile and run with a single code:
@@ -29,6 +30,7 @@ using std::chrono::system_clock;
 const int WIDTH = 50;
 const int HEIGHT = 20;
 const int MAX_STEPS = 1000;
+const int LITERS_PER_TILE = 100;
 const float WATER_FLOW = 2;
 const int HORIZONTAL_OFFSET = 2;
 const int VERTICAL_OFFSET = 1;
@@ -55,8 +57,8 @@ int main(int argc, char const *argv[])
 
     for (int i = 0; i < WIDTH; i++)
     {
-        waterLevel[i] = waterLevel[i] * 1000;
-        groundLevel[i] = groundLevel[i] * 1000;
+        waterLevel[i] = waterLevel[i] * LITERS_PER_TILE;
+        groundLevel[i] = groundLevel[i] * LITERS_PER_TILE;
     }
 
     // set up colors if terminal supports them
@@ -74,7 +76,7 @@ int main(int argc, char const *argv[])
     while (true)
     {
         Physics(WIDTH, waterLevel, groundLevel, leftIsLower, rightIsLower, WATER_FLOW);
-        Draw( WIDTH,  HEIGHT,  HORIZONTAL_OFFSET,  step,  DECIMALS_WATER_HEIGHT,  waterLevel, groundLevel, leftIsLower, rightIsLower);
+        Draw( WIDTH,  HEIGHT,  HORIZONTAL_OFFSET,  step,  DECIMALS_WATER_HEIGHT,  waterLevel, groundLevel, leftIsLower, rightIsLower, LITERS_PER_TILE);
         sleep_for(1ms);
         step++;
     }

@@ -11,7 +11,7 @@ void DrawDebug(int width, int horizontal_offset, int *waterLevel, int *groundLev
 
 
 // TODO remove this gigantic amount of arguments?
-void Draw(int width, int height, int horizontal_offset, int step, int decimals_water_height, int *waterLevel, int *groundLevel, bool *leftIsLower, bool *rightIsLower)
+void Draw(int width, int height, int horizontal_offset, int step, int decimals_water_height, int *waterLevel, int *groundLevel, bool *leftIsLower, bool *rightIsLower, int liters_per_tile)
 {
     erase();
     move(1, horizontal_offset);
@@ -28,8 +28,8 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
             int x = i + 1+horizontal_offset;
             int y = height - j + 1+horizontal_offset;
 
-            if (j*1000 < groundLevel[i])  colorPairIndex = 2;
-            else if (j*1000 >= groundLevel[i] && j*1000 < waterLevel[i] + groundLevel[i]) colorPairIndex = 1;  
+            if (j*liters_per_tile < groundLevel[i])  colorPairIndex = 2;
+            else if (j*liters_per_tile >= groundLevel[i] && j*liters_per_tile < waterLevel[i] + groundLevel[i]) colorPairIndex = 1;  
 
             // draw the direction of the flow (both, left only or right only)
             if (j == 0)
