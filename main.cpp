@@ -1,7 +1,6 @@
 /* 
     WATER LEVEL - 31/03/2023
     TODO faster flow when greater height difference
-    TODO physics still have a bug where water does not flow and gets stuck in an invisible wall
 
     g++ main.cpp checks.cpp physics.cpp draw.cpp -o water -lncurses
     To compile and run with a single code:
@@ -38,8 +37,7 @@ bool leftIsLower[WIDTH] = {false};
 bool rightIsLower[WIDTH] = {false};
 
 int groundLevel[WIDTH] = {
-    // 10,9,8,7,6,5,4,3,2,1,1,5,1,1,1,1,1,1,1,1,6,1,1,1,1,1,2,1,1,1,1,1,1,1,1,7,1,0,1,1,2,0,3,17,0,0,0,0,10
-    10,9,8,7,6,5,4,3,2,1,1,5,1,1,1,1,1,1,1,1,6,0,1,1,1,1,2,1,1,1,1,1,1,1,1,7,1,1,1,1,2,0,3,17,0,0,0,0,10  // TODO this is bugged, fix
+    10,9,8,7,6,5,4,3,2,1,1,5,1,1,1,1,1,1,1,1,6,0,1,1,1,1,2,1,1,1,1,1,1,1,1,7,1,1,1,1,2,0,3,17,0,0,0,0,10
 }; 
 
 int waterLevel[WIDTH] = {
@@ -73,18 +71,9 @@ int main(int argc, char const *argv[])
     int initialWaterVolume = WaterVolume(WIDTH, waterLevel, groundLevel);
     while (true)
     {
-        Draw( WIDTH,  HEIGHT,  HORIZONTAL_OFFSET,  step,  DECIMALS_WATER_HEIGHT,  waterLevel, groundLevel, leftIsLower, rightIsLower);
         Physics(WIDTH, waterLevel, groundLevel, leftIsLower, rightIsLower, WATER_FLOW);
-
-        if (!Levelled(WIDTH, leftIsLower, rightIsLower) || step == 0)
-            sleep_for(1ms);
-        else if (step > 0)
-        {
-            move(HEIGHT+4+DECIMALS_WATER_HEIGHT+3, HORIZONTAL_OFFSET);
-            printw("### Water is levelled ###");
-            getch();
-            break;
-        }
+        Draw( WIDTH,  HEIGHT,  HORIZONTAL_OFFSET,  step,  DECIMALS_WATER_HEIGHT,  waterLevel, groundLevel, leftIsLower, rightIsLower);
+        sleep_for(1ms);
         step++;
     }
 

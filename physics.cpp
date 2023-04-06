@@ -18,8 +18,8 @@ void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bo
         if (i > 0) leftHeight = groundLevel[i-1] + waterLevel[i-1];
         if (i < width - 1) rightHeight = groundLevel[i+1] + waterLevel[i+1];
 
-        if (leftHeight > 0 && currentHeight > leftHeight) leftIsLower[i] = true;
-        if (rightHeight > 0 && currentHeight > rightHeight) rightIsLower[i] = true;
+        if (currentHeight > leftHeight) leftIsLower[i] = true;
+        if (currentHeight > rightHeight) rightIsLower[i] = true;
 
         if (leftIsLower[i] && rightIsLower[i])
         {

@@ -41,8 +41,6 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
                 else if (colorPairIndex == 1) colorPairIndex = 4;
             }
 
-            // if (j == 0 && waterLevel[i]+groundLevel[i] == 0) colorPairIndex = 5; // debug
-
             attrset(COLOR_PAIR(colorPairIndex));
             mvaddch(y, x, charToPrint);
             attroff(COLOR_PAIR(colorPairIndex));
@@ -71,7 +69,6 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
 
 void DrawHorizontalIndex(int height, int horizontal_offset, int i)
 {
-    // attrset(COLOR_PAIR(0));
     if (i < 10)
         mvaddch(height+4 , i+1+horizontal_offset, '0'+i);
     else
@@ -80,12 +77,10 @@ void DrawHorizontalIndex(int height, int horizontal_offset, int i)
         mvaddch(height+4 , i+1+horizontal_offset, str[0]);
         mvaddch(height+5 , i+1+horizontal_offset, str[1]);
     }
-    // attroff(COLOR_PAIR(0));
 }
 
 void DrawVerticalIndex(int width, int height, int horizontal_offset, int j)
 {
-    // attrset(COLOR_PAIR(0));
     if (j < 10)
         mvaddch(height+2-j , width+3, '0'+j);
     else
@@ -94,17 +89,13 @@ void DrawVerticalIndex(int width, int height, int horizontal_offset, int j)
         mvaddch(height+2-j , width+1+horizontal_offset, str[0]);
         mvaddch(height+2-j , width+2+horizontal_offset, str[1]);
     }
-    // attroff(COLOR_PAIR(0));
 }
 
 void DrawDebug(int width, int horizontal_offset, int *waterLevel, int *groundLevel, bool *leftIsLower, bool* rightIsLower)
 {
     for (int i = 0; i < width; i++)
     {
-        string waterLevelStr = to_string(waterLevel[i]);
-        string groundLevelStr = to_string(groundLevel[i]);
         move(i, width + 10 + horizontal_offset);
-        // printw("Index %i\t\tWater level: %i\t\tGround level: %i\t\tL: %i\t\tR: %i", i, waterLevel[i], groundLevel[i], leftIsLower[i], rightIsLower[i]);
         printw("Index %i", i);
         move(i, width + 10 + horizontal_offset + 15);
         printw("Water level: %i", waterLevel[i]);
