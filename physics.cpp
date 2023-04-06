@@ -6,7 +6,7 @@ void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bo
     // apply gravity
     for (int i = 0; i < width; i++)
     {
-        // if (waterLevel[i] < water_flow) continue;
+        if (waterLevel[i] < water_flow) continue;
 
         // reset values
         leftIsLower[i] = false;
@@ -38,8 +38,6 @@ void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bo
             waterLevel[i+1] += water_flow;
         }
         else continue;
-
-        if (waterLevel[i] < 0) waterLevel[i] = 0;
     }
 
     // drain water from the bottom
