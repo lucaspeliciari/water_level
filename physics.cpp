@@ -42,6 +42,10 @@ void Physics(int width, int *waterLevel, int *groundLevel, bool *leftIsLower, bo
 
     // drain water from the bottom
     for (int i = 0; i < width; i++)
-        if (waterLevel[i] >= water_flow && groundLevel[i] == 0 && waterLevel[i] > 0)
-            waterLevel[i] -= water_flow;
+    {
+        if (groundLevel[i] == 0 && waterLevel[i] > 0) waterLevel[i] -= water_flow;
+        if (waterLevel[i] < 0) waterLevel[i] = 0;
+    }
+    
+    
 }

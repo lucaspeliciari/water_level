@@ -1,6 +1,8 @@
 /* 
     WATER LEVEL - 31/03/2023
     TODO faster flow when greater height difference
+    TODO bug where left and/or right is lower is true even though levels are all 0
+    TODO bug where there's 1 drop of water balanced on top of a wall
 
     g++ main.cpp checks.cpp physics.cpp draw.cpp -o water -lncurses
     To compile and run with a single code:
@@ -65,7 +67,7 @@ int main(int argc, char const *argv[])
         init_pair(2, COLOR_WHITE, COLOR_WHITE);
         init_pair(3, COLOR_BLUE, COLOR_WHITE);
         init_pair(4, COLOR_WHITE, COLOR_BLUE);
-        init_pair(5, COLOR_RED, COLOR_RED);  // debug
+        init_pair(5, COLOR_RED, COLOR_RED);
     }
 
     int initialWaterVolume = WaterVolume(WIDTH, waterLevel, groundLevel);
