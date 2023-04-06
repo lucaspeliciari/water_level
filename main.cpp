@@ -39,7 +39,7 @@ bool rightIsLower[WIDTH] = {false};
 
 int groundLevel[WIDTH] = {
     // 10,9,8,7,6,5,4,3,2,1,1,5,1,1,1,1,1,1,1,1,6,1,1,1,1,1,2,1,1,1,1,1,1,1,1,7,1,0,1,1,2,0,3,17,0,0,0,0,10
-    10,9,8,7,6,5,4,3,2,1,1,5,1,1,1,1,1,1,1,1,6,1,1,1,1,1,2,1,1,1,1,1,1,1,1,7,1,1,1,1,2,0,3,17,0,0,0,0,10  // TODO this is bugged, fix
+    10,9,8,7,6,5,4,3,2,1,1,5,1,1,1,1,1,1,1,1,6,0,1,1,1,1,2,1,1,1,1,1,1,1,1,7,1,1,1,1,2,0,3,17,0,0,0,0,10  // TODO this is bugged, fix
 }; 
 
 int waterLevel[WIDTH] = {
@@ -67,6 +67,7 @@ int main(int argc, char const *argv[])
         init_pair(2, COLOR_WHITE, COLOR_WHITE);
         init_pair(3, COLOR_BLUE, COLOR_WHITE);
         init_pair(4, COLOR_WHITE, COLOR_BLUE);
+        init_pair(5, COLOR_RED, COLOR_RED);  // debug
     }
 
     int initialWaterVolume = WaterVolume(WIDTH, waterLevel, groundLevel);

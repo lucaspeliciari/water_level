@@ -41,6 +41,8 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
                 else if (colorPairIndex == 1) colorPairIndex = 4;
             }
 
+            // if (j == 0 && waterLevel[i]+groundLevel[i] == 0) colorPairIndex = 5; // debug
+
             attrset(COLOR_PAIR(colorPairIndex));
             mvaddch(y, x, charToPrint);
             attroff(COLOR_PAIR(colorPairIndex));
