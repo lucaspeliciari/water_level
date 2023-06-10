@@ -20,6 +20,9 @@
 #include "physics.h"
 #include "draw.h"
 
+#include <stdlib.h>
+#include <random>
+
 
 using namespace std;
 using namespace std::this_thread;     // sleep_for
@@ -27,8 +30,8 @@ using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
 using std::chrono::system_clock;
 
 
-const int WIDTH = 50;
-const int HEIGHT = 20;
+const int WIDTH = 170;
+const int HEIGHT = 40;
 const int MAX_STEPS = 1000;
 const int LITERS_PER_TILE = 100;
 const float WATER_FLOW = 2;
@@ -54,6 +57,17 @@ int main(int argc, char const *argv[])
     initscr();
     cbreak();
     noecho();
+
+    random_device rd;
+    mt19937 rng(rd());
+    uniform_int_distribution<int> waterUni(0, 35);
+    uniform_int_distribution<int> groundUni(1, 15);
+    for (int i = 0; i < WIDTH; i++)
+    {
+        waterLevel[i] = waterUni(rng);
+        int randomGroundLevel = groundUni(rng);
+        groundLevel[i] = groundUni(rng);
+    }
 
     for (int i = 0; i < WIDTH; i++)
     {

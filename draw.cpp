@@ -15,7 +15,7 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
 {
     erase();
     move(1, horizontal_offset);
-    printw("WATER LEVEL SIMULATION");
+    printw("WATER LEVEL SIMULATION\tResolution: %ix%i", width, height);
     move(2, horizontal_offset);
     printw("Step: %i", step);
 
@@ -56,7 +56,7 @@ void Draw(int width, int height, int horizontal_offset, int step, int decimals_w
     int waterVolume = WaterVolume(width, waterLevel, groundLevel);
     printw("Max water height: %i\tWater volume: %i", maxWaterHeight, waterVolume);
 
-    DrawDebug(width, horizontal_offset, waterLevel, groundLevel, leftIsLower, rightIsLower);
+    // DrawDebug(width, horizontal_offset, waterLevel, groundLevel, leftIsLower, rightIsLower);
 
     refresh();
 }
